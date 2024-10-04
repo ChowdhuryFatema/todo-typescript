@@ -1,4 +1,5 @@
 import AddTodo from "./components/AddTodo";
+import Todos from "./components/Todos";
 
 
 const App = () => {
@@ -6,6 +7,7 @@ const App = () => {
     <main>
       <h1>TODO REACT + TYPESCRIPT</h1>
       <AddTodo />
+      <Todos></Todos>
     </main>
   );
 };
