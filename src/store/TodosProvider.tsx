@@ -15,13 +15,21 @@ export type TodosContext = {
     todos:Todo[]
     handleAddToDo:(task: string) => void;
     toggleTodoAsCompleted:(id:string) => void;
+    handleDeleteTodo:(id:string) => void;
 }
 
 export const todosContext = createContext<TodosContext | null>(null);
 
 const TodosProvider = ({ children }: TodosProviderProps) => {
 
-    const [todos, setTodos] = useState<Todo[]>([])
+    const [todos, setTodos] = useState<Todo[]>(() => {
+        try {
+            const newTodos = localStorage.getItem("todos") || "[]";
+            return JSON.parse(newTodos )as Todo[]
+        } catch (error) {
+            return []
+        }
+    })
 
     const handleAddToDo = (task: string) => {
 
@@ -36,8 +44,7 @@ const TodosProvider = ({ children }: TodosProviderProps) => {
                 },
                 ...prev
             ]
-            // console.log('my previous data', prev)
-            // console.log(newTodos)
+            localStorage.setItem('todos', JSON.stringify(newTodos))
             return newTodos;
         })
 
@@ -51,16 +58,21 @@ const TodosProvider = ({ children }: TodosProviderProps) => {
                 }
                 return todo; 
             });
+            localStorage.setItem('todos', JSON.stringify(newTodos))
             return newTodos;
         });
     };
     
-    // const handleDeleteTodo = (id) => {
-        
-    // }
+    const handleDeleteTodo = (id:string) => {
+        setTodos((prev) => {
+            let newTodos = prev.filter((filteredTodo) => filteredTodo.id !== id);
+            localStorage.setItem('todos', JSON.stringify(newTodos))
+            return newTodos;
+        })
+    }
 
     return (
-        <todosContext.Provider value={{ todos, handleAddToDo, toggleTodoAsCompleted }}>
+        <todosContext.Provider value={{ todos, handleAddToDo, toggleTodoAsCompleted, handleDeleteTodo }}>
             {children}
         </todosContext.Provider>
     );
